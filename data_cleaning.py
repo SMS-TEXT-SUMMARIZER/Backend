@@ -2,8 +2,11 @@ import asyncio
 from model import summarizer
 from typing import List, Dict
 
+
+
 async def process_messages(messages):
     grouped_messages = {}
+    id_count = 0
     
     try:
         for message in messages:
@@ -17,7 +20,8 @@ async def process_messages(messages):
 
         tasks = []
         for number, msgs in grouped_messages.items():
-            tasks.append(process_and_summarize_individual(number, msgs))
+            id_count = id_count + 1
+            tasks.append(process_and_summarize_individual(id_count, number, msgs))
         result = await asyncio.gather(*tasks)
         
         return result
@@ -25,10 +29,10 @@ async def process_messages(messages):
         return {"error": str(e)}
 
 
-async def process_and_summarize_individual(number: str, messages: List[str]):
+async def process_and_summarize_individual(_id, number, messages):
     try:
         text = " ".join(messages)
         summary = await summarizer(text)
-        return {'number':number, 'body':summary, 'error':False}
+        return {'_id':_id, 'number':number, 'body':summary, 'error':False}
     except Exception as e:
-        return {'number':number, "body": str(e), 'error':True}
+        return {'_id':_id, 'number':number, "body": str(e), 'error':True}
