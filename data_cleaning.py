@@ -16,9 +16,8 @@ async def process_messages(messages):
             grouped_messages[address].append(body)
 
         tasks = []
-        summarized_messages = {}
         for number, msgs in grouped_messages.items():
-            tasks.append(process_and_summarize_individual(number, msgs, summarized_messages))
+            tasks.append(process_and_summarize_individual(number, msgs))
         result = await asyncio.gather(*tasks)
         
         return result
@@ -26,11 +25,10 @@ async def process_messages(messages):
         return {"error": str(e)}
 
 
-async def process_and_summarize_individual(number: str, messages: List[str], summarized_messages: Dict[str, str]):
+async def process_and_summarize_individual(number: str, messages: List[str]):
     try:
         text = " ".join(messages)
         summary = await summarizer(text)
-        summarized_messages[number] = summary
-        return {'number':number, 'body':summary}
+        return {'number':number, 'body':summary, 'error':False}
     except Exception as e:
-        summarized_messages[number] = {"error": str(e)}
+        return {'number':number, "body": str(e), 'error':True}

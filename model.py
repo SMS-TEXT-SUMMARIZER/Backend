@@ -5,8 +5,9 @@ from heapq import nlargest
 from spacy import displacy
 
 
+nlp = spacy.load('en_core_web_md')
+
 async def extract_entities(text):
-    nlp = spacy.load('en_core_web_md')
     doc = nlp(text)
     # print(nlp.pipe_names)
     entities = [(ent.text, ent.label_) for ent in doc.ents]
@@ -17,7 +18,6 @@ async def extract_entities(text):
 
 async def summarizer(rawdocs):
     stop_words = list(STOP_WORDS)
-    nlp = spacy.load('en_core_web_md')
     doc = nlp(rawdocs)
 
     # Extract entities
@@ -55,7 +55,7 @@ async def summarizer(rawdocs):
     # print(sent_scores)
     select_len = int(len(sent_tokens) * 0.6)
     summary = nlargest(select_len, sent_scores, key=sent_scores.get)
-    print(summary)
+    # print(summary)
 
     final_summary = [word.text for word in summary]
     summary = ' '.join(final_summary)
