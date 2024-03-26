@@ -32,7 +32,10 @@ async def process_messages(messages):
 async def process_and_summarize_individual(_id, number, messages):
     try:
         text = " ".join(messages)
+        print("Text: ",text,end="\n")
+        text = "summarize: "+text
         summary = await summarizer(text)
-        return {'_id':_id, 'number':number, 'body':summary, 'error':False}
+        print("Sum", summary[0])
+        return {'_id':_id, 'number':number, 'body':summary[0], 'error':False}
     except Exception as e:
         return {'_id':_id, 'number':number, "body": str(e), 'error':True}
